@@ -1,18 +1,44 @@
 CREATE DATABASE PrevCrime_Vigilante;
 USE PrevCrime_Vigilante;
 
+CREATE TABLE EnderecoAgencia (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	cep CHAR(8),
+    rua VARCHAR(45),
+    bairro VARCHAR(45),
+    cidade VARCHAR(45),
+    estado VARCHAR(20)
+);
+
+CREATE TABLE PlanoAssinatura (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+    descricao VARCHAR(45),
+    data_assinatura DATETIME
+);
+
 CREATE TABLE Agencia (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
     senha VARCHAR(100) NOT NULL,
     dt_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    status_assinatura VARCHAR(45),
-    codigo_empresa VARCHAR(45)
+    codigo_empresa VARCHAR(45),
+    fk_endereco_agencia INT,
+    fk_plano_assinatura INT,
+	FOREIGN KEY (fk_endereco_agencia) REFERENCES EnderecoAgencia(id),
+	FOREIGN KEY (fk_plano_assinatura) REFERENCES PlanoAssinatura(id)
 );
 
-INSERT INTO Agencia (nome, email, senha, status_assinatura, codigo_empresa) VALUES
-('CVC', 'cvc@email.com', 'cvc.123', 'ativo', '1');
+INSERT INTO Agencia (nome, email, senha, codigo_empresa) VALUES
+('CVC', 'cvc@email.com', 'cvc.123', '1');
+
+CREATE TABLE NotificacaoSlack (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(45),
+    mensagem VARCHAR(100),
+    tipo_notificacao VARCHAR(20),
+    data_envio DATETIME
+);
 
 CREATE TABLE Usuario (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -22,7 +48,18 @@ CREATE TABLE Usuario (
     dt_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     cargo_agencia VARCHAR(45),
     fk_agencia INT,
-    FOREIGN KEY (fk_agencia) REFERENCES Agencia(id)
+    fk_notificacao_slack INT,
+    fk_representante INT,
+    FOREIGN KEY (fk_agencia) REFERENCES Agencia(id),
+    FOREIGN KEY (fk_notificacao_slack) REFERENCES NotificacaoSlack(id),
+    FOREIGN KEY (fk_representante) REFERENCES Usuario(id)
+);
+
+CREATE TABLE Relatorio (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo_relatorio VARCHAR(45),
+    dt_geracao DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    status VARCHAR(20)
 );
 
 CREATE TABLE Municipio (
@@ -41,35 +78,41 @@ INSERT INTO Municipio (id, nome_municipio) VALUES
 (8, 'Santos'),
 (9, 'São Vicente');
 
+-- CREATE TABLE CategoriaCrime(
+--    id
+--    nome VARCHAR(100),
+--    descricao VARCHAR(45),
+--    gravidade INT
+-- );
+
 CREATE TABLE Ocorrencias (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nome_crime VARCHAR(100) NOT NULL,
+    tipo_ocorrencia VARCHAR(45),
     qtd_ocorrencias INT,
     mes INT,
     ano INT,
+    nome_crime VARCHAR(100),
     gravidade INT,
-    tipo_ocorrencia VARCHAR(45),
     fk_municipio INT,
+    -- fk_categoria_crime INT,
     FOREIGN KEY (fk_municipio) REFERENCES Municipio(id)
+    -- FOREIGN KEY (fk_categoria_crime) REFERENCES CategoriaCrime(id)
 );
 
 SELECT * FROM Ocorrencias;
 
-CREATE TABLE Relatorio (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    fk_Usuario INT,
-    fk_EstatisticaCriminalidade INT, 
-    titulo_relatorio VARCHAR(45),
-    dt_geracao DATETIME,
-    filtros VARCHAR(45),
-    FOREIGN KEY (fk_Usuario) REFERENCES Usuario(id)
-);
-
 CREATE TABLE Logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    mensagem VARCHAR(45),
+    mensagem VARCHAR(500),
     tipo VARCHAR(45),
     dt_registro VARCHAR(45)
+);
+
+CREATE TABLE Administrador (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100),
+    email VARCHAR(100),
+    senha VARCHAR(100)
 );
 
 CREATE TABLE Filtro (
@@ -78,6 +121,3 @@ CREATE TABLE Filtro (
     descricao VARCHAR(300),
     dt_geracao DATETIME DEFAULT CURRENT_TIMESTAMP
 )
-
-select * from Usuario;
-select * from Agencia;
