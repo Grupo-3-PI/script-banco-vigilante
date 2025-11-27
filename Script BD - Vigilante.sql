@@ -32,15 +32,6 @@ CREATE TABLE Agencia (
 INSERT INTO Agencia (nome, email, senha, codigo_empresa) VALUES
 ('CVC', 'cvc@email.com', 'cvc.123', '1');
 
-CREATE TABLE AvisosSlack (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    titulo VARCHAR(45),
-    mensagem VARCHAR(60),
-    tipo_notificacao VARCHAR(20),
-    data_envio DATETIME,
-    status VARCHAR(20)
-);
-
 CREATE TABLE Usuario (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
@@ -50,9 +41,7 @@ CREATE TABLE Usuario (
     cargo_agencia VARCHAR(45),
     status VARCHAR(50) NOT NULL DEFAULT 'Ativo',
     fk_agencia INT,
-    fk_notificacao_slack INT,
-    FOREIGN KEY (fk_agencia) REFERENCES Agencia(id),
-    FOREIGN KEY (fk_notificacao_slack) REFERENCES AvisosSlack(id)
+    FOREIGN KEY (fk_agencia) REFERENCES Agencia(id)
 );
 
 INSERT INTO Usuario (nome, email, senha, cargo_agencia, status, fk_agencia)
@@ -129,4 +118,13 @@ CREATE TABLE Pedidos (
     fk_administrador INT,
     FOREIGN KEY (fk_usuario) REFERENCES Usuario(id),
     FOREIGN KEY (fk_administrador) REFERENCES Administrador(id)
+);
+
+CREATE TABLE AvisosSlack (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    tipo_notificacao VARCHAR(20),
+    canal VARCHAR(12),
+    status TINYINT,
+    fk_usuario INT,
+    FOREIGN KEY (fk_usuario) REFERENCES Usuario(id)
 );
