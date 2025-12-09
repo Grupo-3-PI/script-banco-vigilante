@@ -5,14 +5,14 @@ CREATE TABLE EnderecoAgencia (
     id INT AUTO_INCREMENT PRIMARY KEY,
     cep VARCHAR(8),
     rua VARCHAR(50),
-    bairro VARCHAR(40),
+    bairro VARCHAR(45),
     cidade VARCHAR(45),
     estado VARCHAR(20)
 );
 
 CREATE TABLE PlanoAssinatura (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    descricao VARCHAR(30),
+    descricao VARCHAR(45),
     data_assinatura DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -41,11 +41,12 @@ CREATE TABLE Usuario (
     cargo_agencia VARCHAR(45),
     status VARCHAR(50) NOT NULL DEFAULT 'Ativo',
     fk_agencia INT,
-    FOREIGN KEY (fk_agencia) REFERENCES Agencia(id)
+    fk_representante INT,
+    FOREIGN KEY (fk_agencia) REFERENCES Agencia(id),
+    FOREIGN KEY (fk_representante) REFERENCES Usuario(id)
 );
 
-INSERT INTO Usuario (nome, email, senha, cargo_agencia, status, fk_agencia)
-VALUES
+INSERT INTO Usuario (nome, email, senha, cargo_agencia, status, fk_agencia) VALUES
 ('Lucas', 'lucas@email.com', '12345678', 'Analista', 'Ativo', 1),
 ('Mariana', 'mariana@email.com', '12345678', 'Analista', 'Ativo', 1),
 ('Rafael', 'rafael@email.com', '12345678', 'Analista', 'Ativo', 1),
@@ -57,20 +58,25 @@ VALUES
 ('Carolina', 'carolina@email.com', '12345678', 'Analista', 'Ativo', 1),
 ('Gabriel', 'gabriel@email.com', '12345678', 'Analista', 'Ativo', 1);
 
+CREATE TABLE AvisosSlack (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    info TINYINT,
+    warn TINYINT,
+    error TINYINT,
+    canal VARCHAR(12),
+    status TINYINT,
+    fk_usuario INT,
+    FOREIGN KEY (fk_usuario) REFERENCES Usuario(id)
+);
+
 CREATE TABLE Municipio (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome_municipio VARCHAR(45) NOT NULL
 );
 
 INSERT INTO Municipio (id, nome_municipio) VALUES
-(1, 'Bertioga'),
-(2, 'Cubatão'),
-(3, 'Guarujá'),
-(4, 'Itanhaém'),
-(5, 'Mongaguá'),
-(6, 'Peruíbe'),
-(7, 'Praia Grande'),
-(8, 'Santos'),
+(1, 'Bertioga'), (2, 'Cubatão'), (3, 'Guarujá'), (4, 'Itanhaém'),
+(5, 'Mongaguá'), (6, 'Peruíbe'), (7, 'Praia Grande'), (8, 'Santos'),
 (9, 'São Vicente');
 
 CREATE TABLE Ocorrencias (
@@ -87,7 +93,7 @@ CREATE TABLE Ocorrencias (
 
 CREATE TABLE Logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    mensagem VARCHAR(500),
+    mensagem LONGTEXT,
     tipo VARCHAR(45),
     dt_registro VARCHAR(45)
 );
@@ -102,8 +108,9 @@ CREATE TABLE Administrador (
 CREATE TABLE Filtros (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(45),
-    data_criacao DATETIME,
-    descricao VARCHAR(45),
+    conteudo_filtro VARCHAR(45),
+    data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    descricao VARCHAR(300),
     categoria VARCHAR(45),
     fk_administrador INT,
     FOREIGN KEY (fk_administrador) REFERENCES Administrador(id)
@@ -113,18 +120,19 @@ CREATE TABLE Pedidos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     descricao VARCHAR(45),
     status VARCHAR(30),
-    data_criacao DATETIME,
+    data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
     fk_usuario INT,
     fk_administrador INT,
     FOREIGN KEY (fk_usuario) REFERENCES Usuario(id),
     FOREIGN KEY (fk_administrador) REFERENCES Administrador(id)
 );
 
-CREATE TABLE AvisosSlack (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-    tipo_notificacao VARCHAR(20),
-    canal VARCHAR(12),
-    status TINYINT,
+CREATE TABLE Relatorio (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    consulta JSON,
+    titulo_relatorio VARCHAR(45),
+    dt_geracao DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    status VARCHAR(20),
     fk_usuario INT,
     FOREIGN KEY (fk_usuario) REFERENCES Usuario(id)
 );
