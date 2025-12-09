@@ -47,7 +47,7 @@ CREATE TABLE Usuario (
 );
 
 INSERT INTO Usuario (nome, email, senha, cargo_agencia, status, fk_agencia) VALUES
-('Lucas', 'lucas@email.com', '12345678', 'Analista', 'Ativo', 1),
+('Luckas', 'luckas@email.com', '12345678', 'admin', 'Ativo', 1),
 ('Mariana', 'mariana@email.com', '12345678', 'Analista', 'Ativo', 1),
 ('Rafael', 'rafael@email.com', '12345678', 'Analista', 'Ativo', 1),
 ('Beatriz', 'beatriz@email.com', '12345678', 'Analista', 'Ativo', 1),
@@ -68,6 +68,9 @@ CREATE TABLE AvisosSlack (
     fk_usuario INT,
     FOREIGN KEY (fk_usuario) REFERENCES Usuario(id)
 );
+
+INSERT INTO AvisosSlack (info, warn, error, canal, status, fk_usuario) VALUES
+(1, 1, 1, 'C09SGAC0N21', 1, 1);
 
 CREATE TABLE Municipio (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -105,6 +108,8 @@ CREATE TABLE Administrador (
     senha VARCHAR(100)
 );
 
+insert into Administrador (nome, email, senha) values ('Luckas', 'luckas@email.com', '1');
+
 CREATE TABLE Filtros (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(45),
@@ -113,6 +118,7 @@ CREATE TABLE Filtros (
     descricao VARCHAR(300),
     categoria VARCHAR(45),
     fk_administrador INT,
+    status VARCHAR(45),
     FOREIGN KEY (fk_administrador) REFERENCES Administrador(id)
 );
 
